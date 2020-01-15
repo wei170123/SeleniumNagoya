@@ -10,6 +10,13 @@ const serviceBuilder = new ServiceBuilder(chromeDriverPath);
 var XLSX = require('xlsx');
 
 async function start() {
+    /**
+     * Chrome Setting
+     * 
+     * * Interact with existing Chrome broswer
+     * * * Use cmd execute command
+     * * * Run node app.js
+     */
     // chrome.exe --remote-debugging-port=9222 --user-data-dir="C:\selenum\AutomationProfile"
     var option = new Options();
     option.options_["debuggerAddress"] = "127.0.0.1:9222";
@@ -46,7 +53,7 @@ async function start() {
     /*
     * Search
     */
-    對象報紙名
+    // 對象報紙名
     await driver.findElement(By.xpath("//*[@id='optNotNavi2']/nobr[2]/label")).click();
     await driver.findElement(By.xpath("//*[@id='optNotNavi2']/nobr[3]/label")).click();
     await driver.findElement(By.xpath("//*[@id='optNotNavi2']/nobr[4]/label")).click();
@@ -73,11 +80,11 @@ async function start() {
 
     await driver.findElement(By.name("next")).click();
 
-    let elements = await driver.findElements(By.xpath("/html/body/center[2]/form/table/tbody/tr[4]/td/table/tbody/tr[1]"));
-    elements.forEach(function (element, index) {
-        element.getText().then(function (buttonInnerText) {
+    let eles = await driver.findElements(By.xpath("/html/body/center[2]/form/table/tbody/tr[4]/td/table/tbody/tr[1]"));
+    eles.forEach(function (element, index) {
+        element.getText().then(function (text) {
             console.log('buttonInnerText');
-            console.log(buttonInnerText);
+            console.log(text);
         }, console.log);
     });
 
