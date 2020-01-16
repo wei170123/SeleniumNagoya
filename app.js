@@ -78,25 +78,59 @@ async function start() {
 
     // await driver.sleep(5000);
 
-    for (var i = 4; i < 42; i++) {
+    let totalNum;
+    await driver.findElement(By.xpath("/html/body/center[2]/form/table/tbody/tr[2]/td/table/tbody/tr[4]/td/span[1]/span")).getText().then(function (text) {
+        console.log('totalNum > ' + i);
+        console.log(text);
+        totalNum = text;
+    }, console.log);
 
-        let eles = await driver.findElements(By.xpath("/html/body/center[2]/form/table/tbody/tr[4]/td/table/tbody/tr[" + i + "]"));
-        eles.forEach(function (element, index) {
-            element.getText().then(function (text) {
-                console.log('Row > ' + i);
+    let totalPage = totalNum % 20 + 1;
+    console.log("totalPage:" + totalPage);
+
+    for (var page = 0; page < totalPage; page++) {
+        for (var i = 2; i < 42; i++) {
+            let elesTitle = await driver.findElements(By.xpath("/html/body/center[2]/form/table/tbody/tr[4]/td/table/tbody/tr[" + i + "]"));
+            elesTitle.forEach(async function (element, index) {
+                await element.getText().then(function (text) {
+                    console.log('Ttile > ' + i);
+                    console.log(text.split(" "));
+                }, console.log);
+            });
+
+            i++;
+
+            let elesName = await driver.findElements(By.xpath("/html/body/center[2]/form/table/tbody/tr[4]/td/table/tbody/tr[" + i + "]"));
+            elesName.forEach(async function (element, index) {
+                await element.getText().then(function (text) {
+                    console.log('Name > ' + i);
+                    console.log(text);
+
+                }, console.log);
+
+                await element.findElement(By.tagName("a")).click();
+            });
+
+            await driver.sleep(Math.floor((Math.random() + 2) * 1000));
+
+            await driver.findElement(By.xpath("/html/body/center[2]/form/table/tbody/tr[3]/td/table[2]/tbody/tr[3]/td/span/div")).getText().then(function (text) {
+                console.log('Content > ' + i);
                 console.log(text);
+
             }, console.log);
-        });
 
-        i++;
-
-        eles = await driver.findElements(By.xpath("/html/body/center[2]/form/table/tbody/tr[4]/td/table/tbody/tr[" + i + "]"));
-        eles.forEach(function (element, index) {
-            element.getText().then(function (text) {
-                console.log('Row > ' + i);
+            await driver.findElement(By.xpath("/html/body/center[2]/form/table/tbody/tr[3]/td/table[2]/tbody/tr[3]/td/span/div/span")).getText().then(function (text) {
+                console.log('Keyword > ' + i);
                 console.log(text);
+
             }, console.log);
-        });
+
+            await driver.findElement(By.xpath("/html/body/center[2]/form/table/tbody/tr[1]/td/table/tbody/tr/td[1]/a")).click();
+
+            await driver.sleep(Math.floor((Math.random() + 3) * 1000));
+        }
+        await driver.findElement(By.name("next")).click();
+        await driver.sleep(Math.floor((Math.random() + 3) * 1000));
     }
 
     /**
