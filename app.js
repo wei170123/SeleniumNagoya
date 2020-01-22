@@ -55,30 +55,7 @@ async function start() {
     /*
     * Search
     */
-    // 對象報紙名
-    await driver.findElement(By.xpath("//*[@id='optNotNavi2']/nobr[2]/label")).click();
-    await driver.findElement(By.xpath("//*[@id='optNotNavi2']/nobr[3]/label")).click();
-    await driver.findElement(By.xpath("//*[@id='optNotNavi2']/nobr[4]/label")).click();
-
-    // 關鍵字
-    await driver.findElement(By.id('txtWord_ID')).sendKeys('にくい');
-
-    // 發行日
-    await driver.findElement(By.xpath("//*[@id='optNotNavi6']/select[1]/option[4]")).click();
-    await driver.findElement(By.xpath("//*[@id='optNotNavi6']/select[2]/option[2]")).click();
-    await driver.findElement(By.xpath("//*[@id='optNotNavi6']/select[3]/option[5]")).click();
-
-    await driver.findElement(By.xpath("//*[@id='optNotNavi6']/select[5]/option[4]")).click();
-    await driver.findElement(By.xpath("//*[@id='optNotNavi6']/select[6]/option[13]")).click();
-    await driver.findElement(By.xpath("//*[@id='optNotNavi6']/select[7]/option[35]")).click();
-
-    // 順序
-    await driver.findElement(By.id("rdoDspOrder2")).click();
-
-    // 搜尋
-    await driver.findElement(By.xpath("//*[@id='optNotNavi4']/input[2]")).click();
-
-    await driver.sleep(5000);
+    // await search(driver,keyword);
 
     let totalNum;
     await driver.findElement(By.xpath("/html/body/center[2]/form/table/tbody/tr[2]/td/table/tbody/tr[4]/td/span[1]/span")).getText().then(function (text) {
@@ -87,17 +64,19 @@ async function start() {
         totalNum = text;
     }, console.log);
 
-    // let totalPage = totalNum % 20 + 1;
-    let totalPage = 2;
+    let totalPage = totalNum / 20 + 1;
+    // let totalPage = 2;
     console.log("totalPage:" + totalPage);
 
     var rowNum = 2;
+    var workbook = XLSX.readFile('src/plugin/file/key1-tmp.xlsx');
     for (var page = 0; page < totalPage; page++) {
-        var workbook = XLSX.readFile('src/plugin/file/key1-tmp.xlsx');
+
         var worksheet = workbook.Sheets[workbook.SheetNames[0]];
 
-        for (var i = 2; i < 6; i++) {
+        for (var i = 2; i < 42; i++) {
             rowNum++;
+            console.log("rowNum:" + rowNum);
             let elesTitle = await driver.findElements(By.xpath("/html/body/center[2]/form/table/tbody/tr[4]/td/table/tbody/tr[" + i + "]"));
             elesTitle.forEach(async function (element, index) {
                 await element.getText().then(function (text) {
@@ -124,6 +103,8 @@ async function start() {
                         t: 'n',
                         v: text.split(" ")[4]
                     }
+                    // console.log("worksheet1:");
+                    // console.log(worksheet);
                 }, console.log);
             });
 
@@ -139,6 +120,8 @@ async function start() {
                         t: 's',
                         v: text
                     }
+                    // console.log("worksheet2:");
+                    // console.log(worksheet);
                 }, console.log);
 
                 await element.findElement(By.tagName("a")).click();
@@ -148,26 +131,30 @@ async function start() {
 
             await driver.findElement(By.xpath("/html/body/center[2]/form/table/tbody/tr[3]/td/table[2]/tbody/tr[3]/td/span/div")).getText().then(function (text) {
                 console.log('Content > ' + i);
-                console.log(text);
+                // console.log(text);
                 var ii = rowNum;
                 worksheet['G' + ii] = {
                     t: 's',
-                    v: text
+                    v: text.substring(text.indexOf(keyword) - 150, text.indexOf(keyword))
                 }
                 worksheet['I' + ii] = {
                     t: 's',
-                    v: text
+                    v: text.substring(text.indexOf(keyword), text.indexOf(keyword) + 150)
                 }
+                // console.log("worksheet3:");
+                // console.log(worksheet);
             }, console.log);
 
             await driver.findElement(By.xpath("/html/body/center[2]/form/table/tbody/tr[3]/td/table[2]/tbody/tr[3]/td/span/div/span")).getText().then(function (text) {
                 console.log('Keyword > ' + i);
-                console.log(text);
+                // console.log(text);
                 var ii = rowNum;
                 worksheet['H' + ii] = {
                     t: 's',
                     v: text
                 }
+                // console.log("worksheet4:");
+                // console.log(worksheet);
             }, console.log);
 
             await driver.findElement(By.xpath("/html/body/center[2]/form/table/tbody/tr[1]/td/table/tbody/tr/td[1]/a")).click();
@@ -177,11 +164,8 @@ async function start() {
         await driver.findElement(By.name("next")).click();
         await driver.sleep(Math.floor((Math.random() + 3) * 1000));
 
-        XLSX.writeFile(workbook, 'src/plugin/file/output.xlsx');
+        // XLSX.writeFile(workbook, 'src/plugin/file/output.xlsx');
     }
-
-    // XLSX.writeFile(workbook, 'src/plugin/file/output.xlsx');
-
     // console.log(workbook);
     XLSX.writeFile(workbook, 'src/plugin/file/output.xlsx');
     /**
